@@ -2,13 +2,19 @@ from openpyxl import load_workbook
 import time
 import schedule
 
-def auto_update(planilha_original):
+def auto_update(planilha_original, row, column):
     arquivo = load_workbook(planilha_original)
     aba_utilizada = arquivo.active
-    Cell = int(input("Qual linha desejada: "))
-    Cell_column = int(input("Qual a coluna desejada: "))
-    valor_Cell = aba_utilizada.cell(row=Cell, column=Cell_column).value
-    valor_Cell = aba_utilizada.cell(row=Cell, column=Cell_column).value = valor_Cell + valor_Cell*2/100
+    valor_Cell = aba_utilizada.cell(row=row, column=column).value
+    novo_valor = valor_Cell * 1.02
+    aba_utilizada.cell(row=row, column=column).value = novo_valor
     arquivo.save("update.xlsx")
+            
+linha = int(input("Qual linha desejada: "))
+coluna = int(input("Qual a coluna desejada: "))
 
-auto_update("C:\Desktop\Projeto principal automatização\pLA_aUTO.xlsx")
+#Agendando a função
+schedule.every().day.at("14:02:30").do(auto_update, planilha_original="update.xlsx", row=linha, column=coluna)
+
+while True:
+    schedule.run_pending()
